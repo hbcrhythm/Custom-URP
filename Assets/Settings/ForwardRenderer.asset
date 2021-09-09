@@ -29,10 +29,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_RendererFeatures:
   - {fileID: -4213883399976338245}
-  - {fileID: 3709748977062749909}
   - {fileID: 1925225154679884253}
   - {fileID: 1148646474234942024}
-  m_RendererFeatureMap: bbbc7eb35f4785c5d5a6b11f0aad7b33dd4957f113c6b71a485247ede1cff00f
+  m_RendererFeatureMap: bbbc7eb35f4785c5dd4957f113c6b71a485247ede1cff00f
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   shaders:
@@ -94,7 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
   m_Name: Planar Shadow
   m_EditorClassIdentifier: 
-  m_Active: 0
+  m_Active: 1
   settings:
     passTag: Planar Shadow
     Event: 300
@@ -121,25 +120,3 @@ MonoBehaviour:
       restoreCamera: 1
       offset: {x: 0, y: 0, z: 0, w: 0}
       cameraFieldOfView: 60
---- !u!114 &3709748977062749909
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5444d1e53bf98a444a86a9e2683e0adc, type: 3}
-  m_Name: PlanarShadowFeature
-  m_EditorClassIdentifier: 
-  m_Active: 1
-  setting:
-    renderPassEvent: 300
-    planarShadowMaterial: {fileID: 2100000, guid: 1d4a69413f93b8741862f8b73d4e3131, type: 2}
-    layerMask:
-      serializedVersion: 2
-      m_Bits: 128
-    lightDir: {x: 0.24, y: 3, z: 4.18}
-    color: {r: 0, g: 0, b: 0, a: 0.6666667}
-    falloff: 0.2

@@ -2,7 +2,12 @@
 {
 	Properties
 	{
-		_MainTex ("Texture", 2D) = "white" {}
+		_ShadowColor("ShadowColor",Color) = (0,0,0,1)
+		_ShadowPlane("ShadowPlane", float) = 0
+		[Toggle(_FADE)] _Fade("Fade", Float) = 0
+		_ShadowFadeParams("ShadowFadeParams", Vector) = (0.0, 1.5, 0.7, 0.0)
+		_ShadowInvLen("ShadowInvLen", float) = 0.22
+		_ShadowFalloff("ShadowFalloff", Range(0,1)) = 0.5
 	}
 	
 	SubShader
@@ -28,82 +33,75 @@
 				ZFail Keep
 			}
 
-			//CGPROGRAM
 			HLSLPROGRAM
-			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
-			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
+
+			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+
+			#pragma shader_feature _FADE
 			#pragma vertex vert
 			#pragma fragment frag
 
-			CBUFFER_START(UnityPerFrame)
-	        float4x4 unity_MatrixVP;
-            CBUFFER_END
-
-            CBUFFER_START(UnityPerDraw)
-	        float4x4 unity_ObjectToWorld;
-            CBUFFER_END
-            #define UNITY_MATRIX_M unity_ObjectToWorld
-
             CBUFFER_START(UnityPerMaterial)
-            
-			float4 _ShadowPlane;
-			float4 _ShadowProjDir;
-			float4 _WorldPos;
-			float _ShadowInvLen;
-			float4 _ShadowFadeParams;
+			
+			float4 _ShadowColor;
 			float _ShadowFalloff;
+			float _ShadowPlane;
+			float4 _ShadowFadeParams;
+			float _ShadowInvLen;
 
 			CBUFFER_END
 
-			struct appdata
-			{
-				float4 vertex : POSITION;
+			struct Attributes {
+				float4 positionOS	: POSITION;
 			};
 
-			struct v2f
-			{
-				float4 vertex : SV_POSITION;
-				float3 xlv_TEXCOORD0 : TEXCOORD0;
-				float3 xlv_TEXCOORD1 : TEXCOORD1;
+			struct Varyings {
+				float4 positionCS	: SV_POSITION;
+				float4 color : COLOR;
 			};
 
-			v2f vert(appdata v)
+			float3 ShadowProjectPos(float4 positionOS, float3 lightDir)
 			{
-				v2f o;
-				float3 lightdir = normalize(_ShadowProjDir);
-				//float3 worldpos = mul(unity_ObjectToWorld, v.vertex).xyz;
-				//float3 worldpos = TransformObjectToWorld(v.vertex.xyz);
-				float4 worldPos = mul(UNITY_MATRIX_M, float4(v.vertex.xyz, 1.0));
-				_ShadowPlane = float4(0,10,0,0);
+				float3 shadowPos;
 
-				// _ShadowPlane.w = p0 * n  // 平面的w分量就是p0 * n
-				float distance = (_ShadowPlane.w - dot(_ShadowPlane.xyz, worldPos.xyz)) / dot(_ShadowPlane.xyz, lightdir.xyz);
-				worldPos = worldPos + distance * float4(lightdir.xyz, 0.0);
-				//o.vertex = mul(unity_MatrixVP, float4(worldpos, 1.0));
-				//o.vertex = TransformWorldToHClip(float4(worldpos, 1.0));
-				o.vertex = mul(unity_MatrixVP, worldPos);
-				o.xlv_TEXCOORD0 = _WorldPos.xyz;
-				o.xlv_TEXCOORD1 = worldPos;
-				return o;
+				float3 worldPos = TransformObjectToWorld(positionOS.xyz);
+
+				shadowPos.y = min(worldPos.y, _ShadowPlane);
+				shadowPos.xz = worldPos.xz - lightDir.xz * max(0, worldPos.y - _ShadowPlane) / lightDir.y;
+
+				return shadowPos;
 			}
 
-			float4 frag(v2f i) : SV_Target
-			{
-				float3 posToPlane_2 = (i.xlv_TEXCOORD0 - i.xlv_TEXCOORD1);
-				float4 color;
-				color.xyz = float3(0.0, 0.0, 0.0);
+			Varyings vert(Attributes IN) {
+				Varyings OUT;
 
-				// 下面两种阴影衰减公式都可以使用(当然也可以自己写衰减公式)
-				// 王者荣耀的衰减公式
-				// color.w = (pow((1.0 - clamp(((sqrt(dot(posToPlane_2, posToPlane_2)) * _ShadowInvLen) - _ShadowFadeParams.x), 0.0, 1.0)), _ShadowFadeParams.y) * _ShadowFadeParams.z);
+				Light light = GetMainLight();
 
-				// 另外的阴影衰减公式
-				color.w = 1.0 - saturate(distance(i.xlv_TEXCOORD0, i.xlv_TEXCOORD1) * _ShadowFalloff);
-				// color.w = 1.0;
+				float3 shadowPos = ShadowProjectPos(IN.positionOS, light.direction);
 
-				return color;
+				OUT.positionCS = TransformWorldToHClip(shadowPos);
+
+				//得到中心点世界坐标
+				float3 center = float3(unity_ObjectToWorld[0].w, _ShadowPlane, unity_ObjectToWorld[2].w);
+
+				OUT.color = _ShadowColor;
+				
+				#if defined(_FADE)
+					float3 dis = distance(shadowPos, center);
+					OUT.color.a = pow((1.0 - clamp(((sqrt(dot(dis, dis)) * _ShadowInvLen) - _ShadowFadeParams.x), 0.0, 1.0)), _ShadowFadeParams.y) * _ShadowFadeParams.z;			
+				#else
+					float falloff = 1 - saturate(distance(shadowPos, center) * _ShadowFalloff);
+					OUT.color.a *= falloff;
+				#endif
+
+				return OUT;
+
 			}
-			//ENDCG
+
+			half4 frag(Varyings IN) : SV_Target{
+				return IN.color;
+			}
+
 			ENDHLSL
 		}
 	}

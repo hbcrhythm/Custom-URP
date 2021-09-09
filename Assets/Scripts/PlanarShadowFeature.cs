@@ -67,14 +67,12 @@ public class PlanarShadowFeature : ScriptableRendererFeature
 
             using (new ProfilingScope(cmd, ProfilingSampler.Get(CustomConfig.CustomProfileId.PlanarShadow)))
             {
-                //cmd.Blit(renderingData.cameraData.renderer.cameraColorTarget, renderingData.cameraData.renderer.cameraColorTarget);
+                // cmd.SetGlobalVector("_WorldPos", new Vector3(0, 0, 0));
+                // cmd.SetGlobalVector("_ShadowProjDir", lightDir);
+                // cmd.SetGlobalVector("_ShadowPlane", new Vector4(0, 1, 0, 0));
 
-                cmd.SetGlobalVector("_WorldPos", new Vector3(0, 0, 0));
-                cmd.SetGlobalVector("_ShadowProjDir", lightDir);
-                cmd.SetGlobalVector("_ShadowPlane", new Vector4(0, 1, 0, 0));
-
-                cmd.SetGlobalColor("_ShadowColor", color);
-                cmd.SetGlobalFloat("_ShadowFalloff", falloff);
+                // cmd.SetGlobalColor("_ShadowColor", color);
+                // cmd.SetGlobalFloat("_ShadowFalloff", falloff);
 
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Clear();
