@@ -19,7 +19,6 @@ public class PlanarShadowFeature : ScriptableRendererFeature
         public Color color = new Color(0, 0, 0, 170 / 255f);
         public float falloff = 0.2f;
 
-
     }
 
     public PlanarShadowSettings setting = new PlanarShadowSettings();

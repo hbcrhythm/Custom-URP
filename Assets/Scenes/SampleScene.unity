@@ -505,7 +505,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7519278769719373355, guid: b2f29170641bcf3408d68fd905cc7077, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.95
+      value: 1.1
       objectReference: {fileID: 0}
     - target: {fileID: 7519278769719373355, guid: b2f29170641bcf3408d68fd905cc7077, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2007,7 +2007,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_RenderPostProcessing: 1
-  m_Antialiasing: 1
+  m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 1
   m_Dithering: 0

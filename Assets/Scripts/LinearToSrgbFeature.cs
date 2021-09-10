@@ -4,30 +4,15 @@ using UnityEngine.Rendering.Universal;
 
 public class LinearToSrgbFeature : ScriptableRendererFeature
 {
-    [System.Serializable]
-    public class UIlineartoargbSettings
+    class LineartoargbPass : ScriptableRenderPass
     {
-        [Range(0, 2)]
-        public float scale = 1f;
-    }
-
-    public UIlineartoargbSettings settings = new UIlineartoargbSettings();
-
-    class UIlineartoargbPass : ScriptableRenderPass
-    {
-        //private float m_Scale = 1.0f;
-
         RenderTargetIdentifier cameraColorTexture;
 
         string profileTag;
 
-        int tmpId1;
-
-        RenderTargetIdentifier tmpRT1;
-
         Material srgbtolinerMaterial;
 
-        public UIlineartoargbPass(string profileTag)
+        public LineartoargbPass(string profileTag)
         {
             this.profileTag = profileTag;
             var shader = Shader.Find("Hidden/Universal Render Pipeline/Blit");
@@ -38,7 +23,6 @@ public class LinearToSrgbFeature : ScriptableRendererFeature
                 return;
             }
             srgbtolinerMaterial = CoreUtils.CreateEngineMaterial(shader);
-
         }
 
         // This method is called before executing the render pass.
@@ -63,7 +47,7 @@ public class LinearToSrgbFeature : ScriptableRendererFeature
                 return;
             }
 
-            if (renderingData.cameraData.camera.tag.Contains("UICamera"))
+            if (renderingData.cameraData.resolveFinalTarget)
             {
                 return;
             }
@@ -80,9 +64,8 @@ public class LinearToSrgbFeature : ScriptableRendererFeature
 #else
             Material matetial = srgbtolinerMaterial;
 #endif
-            cmd.SetGlobalTexture("_SourceTex", cameraColorTexture);
-            cmd.Blit(cameraColorTexture, cameraColorTexture, matetial);
 
+            cmd.Blit(cameraColorTexture, cameraColorTexture, matetial);
             context.ExecuteCommandBuffer(cmd);
 
             cmd.Clear();
@@ -97,15 +80,15 @@ public class LinearToSrgbFeature : ScriptableRendererFeature
         }
     }
 
-    UIlineartoargbPass m_ScriptablePass;
+    LineartoargbPass m_ScriptablePass;
 
     /// <inheritdoc/>
     public override void Create()
     {
-        m_ScriptablePass = new UIlineartoargbPass("LinearToSrgb");
+        m_ScriptablePass = new LineartoargbPass("LinearToSrgb");
 
         // Configures where the render pass should be injected.
-        m_ScriptablePass.renderPassEvent = RenderPassEvent.AfterRendering;
+        m_ScriptablePass.renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
     }
 
     // Here you can inject one or multiple render passes in the renderer.

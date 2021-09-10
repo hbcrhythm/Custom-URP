@@ -521,7 +521,7 @@ namespace UnityEngine.Rendering.Universal
             // When post-processing is enabled we can use the stack to resolve rendering to camera target (screen or RT).
             // However when there are render passes executing after post we avoid resolving to screen so rendering continues (before sRGBConvertion etc)
             bool resolvePostProcessingToCameraTarget = !hasCaptureActions && !hasPassesAfterPostProcessing ;
-                //&& !applyFinalPostProcessing;
+            //&& !applyFinalPostProcessing;
 
             if (lastCameraInTheStack)
             {
@@ -595,6 +595,7 @@ namespace UnityEngine.Rendering.Universal
             // stay in RT so we resume rendering on stack after post-processing
             else if (applyPostProcessing)
             {
+                Debug.Log("m_ActiveCameraColorAttachment " + m_ActiveCameraColorAttachment.Identifier() + " m_AfterPostProcessColor " + m_AfterPostProcessColor.Identifier() + " camera name " + camera.name + " cameracolor " + cameraColorTarget);
                 m_PostProcessPass.Setup(cameraTargetDescriptor, m_ActiveCameraColorAttachment, m_AfterPostProcessColor, m_ActiveCameraDepthAttachment, m_ColorGradingLut, false, false);
                 EnqueuePass(m_PostProcessPass);
             }
@@ -617,12 +618,12 @@ namespace UnityEngine.Rendering.Universal
 
         }
 
-        private void RefreshCameraColorAttachment(ScriptableRenderContext context, ref CameraData cameraData)
-        {
-            if (!m_SplitUICameraAndSceneCameraRenderer)
-                return;
+        //private void RefreshCameraColorAttachment(ScriptableRenderContext context, ref CameraData cameraData)
+        //{
+        //    if (!m_SplitUICameraAndSceneCameraRenderer)
+        //        return;
 
-            CommandBuffer cmd = CommandBufferPool.Get(k_ReleaseCameraTextures);
+        //    CommandBuffer cmd = CommandBufferPool.Get(k_ReleaseCameraTextures);
 
             //we need create a new depth texture if UICamera dimensions changed.
             //if (m_UIRenderScaleChanged || 
@@ -648,10 +649,10 @@ namespace UnityEngine.Rendering.Universal
             //    cmd.ReleaseTemporaryRT(m_ActiveCameraColorAttachment.id);
             //    m_ActiveCameraColorAttachment = m_SceneFinalColorAttachment;
             //}
-            context.ExecuteCommandBuffer(cmd);
+        //    context.ExecuteCommandBuffer(cmd);
 
-            CommandBufferPool.Release(cmd);
-        }
+        //    CommandBufferPool.Release(cmd);
+        //}
 
         /// <inheritdoc />
         public override void SetupLights(ScriptableRenderContext context, ref RenderingData renderingData)

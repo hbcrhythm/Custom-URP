@@ -13,8 +13,6 @@ MonoBehaviour:
   m_Name: LinearToSrgbFeature
   m_EditorClassIdentifier: 
   m_Active: 1
-  settings:
-    scale: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75,11 +73,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 0
   settings:
-    renderPassEvent: 500
+    renderPassEvent: 1000
     blurMaterial: {fileID: 2100000, guid: 71f9368e88dae5344bfd43987b981c97, type: 2}
     blurPasses: 2
     downsample: 1
-    copyToFramebuffer: 0
+    copyToFramebuffer: 1
     targetName: _blurTexture
 --- !u!114 &1925225154679884253
 MonoBehaviour:
@@ -96,7 +94,7 @@ MonoBehaviour:
   m_Active: 1
   settings:
     passTag: Planar Shadow
-    Event: 300
+    Event: 500
     filterSettings:
       RenderQueueType: 0
       LayerMask:

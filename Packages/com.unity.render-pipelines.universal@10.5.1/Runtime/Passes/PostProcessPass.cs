@@ -442,6 +442,7 @@ namespace UnityEngine.Rendering.Universal.Internal
 
                 // With camera stacking we not always resolve post to final screen as we might run post-processing in the middle of the stack.
                 bool finishPostProcessOnScreen = cameraData.resolveFinalTarget || (m_Destination == cameraTargetHandle || m_HasFinalPass == true);
+                 
 
 #if ENABLE_VR && ENABLE_XR_MODULE
                 if (cameraData.xr.enabled)
@@ -481,6 +482,8 @@ namespace UnityEngine.Rendering.Universal.Internal
                     cmd.SetRenderTarget(cameraTarget, colorLoadAction, RenderBufferStoreAction.Store, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.DontCare);
                     cmd.SetViewProjectionMatrices(Matrix4x4.identity, Matrix4x4.identity);
 
+                    Debug.Log("m_Destination == RenderTargetHandle.CameraTarge " + (m_Destination == RenderTargetHandle.CameraTarget) + " finishPostProcessOnScreen " + finishPostProcessOnScreen + " camera name " + cameraData.camera.name);
+
                     if (m_Destination == RenderTargetHandle.CameraTarget)
                         cmd.SetViewport(cameraData.pixelRect);
 
@@ -495,12 +498,14 @@ namespace UnityEngine.Rendering.Universal.Internal
                         }
                     }
 
+
                     // TODO: We need a proper camera texture swap chain in URP.
                     // For now, when render post-processing in the middle of the camera stack (not resolving to screen)
                     // we do an extra blit to ping pong results back to color texture. In future we should allow a Swap of the current active color texture
                     // in the pipeline to avoid this extra blit.
                     else if (!finishPostProcessOnScreen)
                     {
+
                         cmd.SetGlobalTexture(ShaderPropertyId.sourceTex, cameraTarget);
                         cmd.SetRenderTarget(m_Source.id, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.DontCare);
                         cmd.DrawMesh(RenderingUtils.fullscreenMesh, Matrix4x4.identity, m_BlitMaterial);
