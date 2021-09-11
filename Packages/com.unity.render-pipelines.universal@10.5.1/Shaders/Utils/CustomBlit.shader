@@ -16,6 +16,7 @@ Shader "Hidden/Universal Render Pipeline/CustomBlit"
             // Required to compile gles 2.0 with standard srp library
             #pragma prefer_hlslcc gles
             #pragma exclude_renderers d3d11_9x
+            #pragma multi_compile_fragment _ _SRGB_TO_LINEAR_CONVERSION
             #pragma vertex Vertex
             #pragma fragment Fragment
 
@@ -54,8 +55,10 @@ Shader "Hidden/Universal Render Pipeline/CustomBlit"
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 half4 col = SAMPLE_TEXTURE2D_X(_SourceTex, sampler_SourceTex, input.uv);
-
-                col = SRGBToLinear(col);
+                
+                #ifdef _SRGB_TO_LINEAR_CONVERSION
+                    col = SRGBToLinear(col);
+                #endif
 
                 return col;
             }

@@ -31,6 +31,11 @@ namespace UnityEngine.Rendering.Universal.Internal
             m_TargetDimension = baseDescriptor.dimension;
         }
 
+        bool RequireSRGBConversionBlitToBackBuffer(CameraData cameraData)
+        {
+            return cameraData.requireSrgbConversion;
+        }
+
         /// <inheritdoc/>
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
@@ -48,7 +53,10 @@ namespace UnityEngine.Rendering.Universal.Internal
             bool isSceneViewCamera = cameraData.isSceneViewCamera;
 
             CommandBuffer cmd = CommandBufferPool.Get(m_ProfilerTag);
-            
+
+            if (!RequireSRGBConversionBlitToBackBuffer(cameraData))
+                m_BlitMaterial.EnableKeyword(ShaderKeywordStrings.SRGBToLinearConversion);
+
             // Use default blit for XR as we are not sure the UniversalRP blit handles stereo.
             // The blit will be reworked for stereo along the XRSDK work.
             Material blitMaterial = (cameraData.xr.enabled) ? null : m_BlitMaterial;

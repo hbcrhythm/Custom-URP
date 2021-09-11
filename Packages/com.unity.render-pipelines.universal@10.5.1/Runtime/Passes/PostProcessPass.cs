@@ -482,7 +482,6 @@ namespace UnityEngine.Rendering.Universal.Internal
                     cmd.SetRenderTarget(cameraTarget, colorLoadAction, RenderBufferStoreAction.Store, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.DontCare);
                     cmd.SetViewProjectionMatrices(Matrix4x4.identity, Matrix4x4.identity);
 
-                    Debug.Log("m_Destination == RenderTargetHandle.CameraTarge " + (m_Destination == RenderTargetHandle.CameraTarget) + " finishPostProcessOnScreen " + finishPostProcessOnScreen + " camera name " + cameraData.camera.name);
 
                     if (m_Destination == RenderTargetHandle.CameraTarget)
                         cmd.SetViewport(cameraData.pixelRect);

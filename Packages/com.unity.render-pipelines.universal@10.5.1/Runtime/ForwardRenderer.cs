@@ -595,7 +595,6 @@ namespace UnityEngine.Rendering.Universal
             // stay in RT so we resume rendering on stack after post-processing
             else if (applyPostProcessing)
             {
-                Debug.Log("m_ActiveCameraColorAttachment " + m_ActiveCameraColorAttachment.Identifier() + " m_AfterPostProcessColor " + m_AfterPostProcessColor.Identifier() + " camera name " + camera.name + " cameracolor " + cameraColorTarget);
                 m_PostProcessPass.Setup(cameraTargetDescriptor, m_ActiveCameraColorAttachment, m_AfterPostProcessColor, m_ActiveCameraDepthAttachment, m_ColorGradingLut, false, false);
                 EnqueuePass(m_PostProcessPass);
             }
